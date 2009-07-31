@@ -1,17 +1,30 @@
 #!/bin/bash
+#
+# Pietro Bertera <pietro@bertera.i>
+#
+# This file may be distributed and/or modified under the terms of
+# the GNU General Public License version 2 as published by
+# the Free Software Foundation.
+# This file is distributed without any warranty; without even the implied
+# warranty of merchantability or fitness for a particular purpose.
+
 
 function bailout {
     echo ERROR: $@
     exit -1
 }
 
-function clean_bailout {
-	logger Shutting down SSH-VPN  $1
-	eval $BAILOUT_REMOTE_COMMAND
+function usage { 
+	"Usage: $0 config-file {dry-run|start|stop|restart|status}"
+	bailout
 }
 
-[ -z $1 ] && bailout No configuration file defined
-[ -z $2 ] && bailout No action defined
+function clean_bailout {
+	eval $BAILOUT_COMMAND
+}
+
+[ -z $1 ] &&  usage
+[ -z $2 ] &&  usage
 
 ACTION=$2
 
@@ -77,7 +90,7 @@ $REMOTE_IP addr add $RTUNADDR dev $REMOTE_TUN peer $LTUNADDR ; \
 $ENABLE_PEER_IP_FORWARD && echo 1 > /proc/sys/net/ipv4/ip_forward ; \
 $TRY_LOAD_PEER_TUN_MOD && modprobe tun ; \
 $POST_PEER_CMD"
-
+	
 	LOCAL_COMMAND="$LOCAL_IP link set up dev $LOCAL_TUN ; \
 $LOCAL_IP addr add $LTUNADDR dev $LOCAL_TUN peer $RTUNADDR ; \
 $LOCAL_IP route add $REMOTE_NET via $RTUNADDR dev $LOCAL_TUN ; \
@@ -96,6 +109,7 @@ case "$ACTION" in
 		$SSH_COMMAND "$REMOTE_COMMAND"
 		PID=$(get_pid)
 		echo SSH PID: $PID
+		sleep 1
 		eval $LOCAL_COMMAND
 		;;
 
@@ -125,6 +139,6 @@ case "$ACTION" in
 		;;
 
 	*)
-		bailout "Usage: $0 {dry-run|start|stop|restart|status}"
+		usage
 		;;
 esac
