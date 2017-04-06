@@ -1,12 +1,12 @@
 # ssh-vpn
 
-SSH-VPN is a bash helper for VPN trough SSH based on the -w option.
+ssh-vpn is a bash script helper for setting-up SSH based VPN profiting the -w option.
 
-OpenSSH creates tun devices tunneling VPN traffic.
+Using the -w command line swithc OpenSSH creates tun devices tunneling VPN traffic, see ssh_config(5) **Tunnel** and **TunnelDevice** sections.
 
-SSH-VPN discovers the first free (remote and local) tun device.
+ssh-vpn automatically discovers the first free (remote and local) tun device.
 
-Trough a config file you can define addressing, peer and routing commands.
+Via the config file you can define addressing, peer and commands to be executed locally and on the remote host.
 
 Example:
 
