@@ -32,6 +32,8 @@ ACTION=$2
 SSH=/usr/bin/ssh
 LOCAL_IP=/sbin/ip
 REMOTE_IP=/sbin/ip
+REMOTE_ECHO=/bin/echo
+REMOTE_MODPROBE=/sbin/modprobe
 
 if [ -f $1 ]; then . $1 else bailout Configuration file $1 not exist; fi
 
@@ -87,8 +89,8 @@ function discover_tun_device {
 
 	REMOTE_COMMAND="$REMOTE_IP link set up dev $REMOTE_TUN ; \
 $REMOTE_IP addr add $RTUNADDR dev $REMOTE_TUN peer $LTUNADDR ; \
-$ENABLE_PEER_IP_FORWARD && echo 1 > /proc/sys/net/ipv4/ip_forward ; \
-$TRY_LOAD_PEER_TUN_MOD && modprobe tun ; \
+$ENABLE_PEER_IP_FORWARD && $REMOTE_ECHO 1 > /proc/sys/net/ipv4/ip_forward ; \
+$TRY_LOAD_PEER_TUN_MOD && $REMOTE_MODPROBE tun ; \
 $POST_PEER_CMD"
 	
 	LOCAL_COMMAND="$LOCAL_IP link set up dev $LOCAL_TUN ; \
